@@ -25,4 +25,4 @@ Open the `scrape-guidestar.rb` file and put in the keyword you want to scrape fo
 ```ruby
 ruby -I./ scrape-guidestar.rb
 ```
-Then wait for a long time, and open the `guidestar-[keyword].csv` file to see the results once the script finishes.
+Then wait for a long time, and open the `guidestar-[keyword].csv` file to see the results once the script finishes.  You can watch the `guidestar.log` file while this is happening to keep an eye on what is going on.
