@@ -17,7 +17,9 @@ class GuideStar
     @pass = password
     @logged_in = false
     @log.info "Creating browser"
-    @browser = Watir::Browser.new :chrome
+    client = Selenium::WebDriver::Remote::Http::Default.new
+    client.timeout = 180  # allow internet to be sloooooow
+    @browser = Watir::Browser.new :chrome, :http_client => client
     @log.info " done"
   end
 
