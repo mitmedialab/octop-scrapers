@@ -22,7 +22,7 @@ class GuideStar
   end
 
   def scrape_orgs_matching keyword
-    @output_csv = init_csv 'guidestar-'+keyword+'.csv'
+    @output_csv = init_csv sanitize_filename('guidestar-'+keyword+'.csv')
     login if not @logged_in
     INCOME_RANGES.each do |income|
       do_advanced_search keyword, income
@@ -64,7 +64,7 @@ class GuideStar
           @log.info "  loading next page..."
           @browser.link(:text=>'Next >').click
           queue_search_results_page keyword, income_range, page_num
-        rescue Selenium::WebDriver::Error::WebDriverError
+        rescue Selenium::WebDriver::Error::WebDriverError, Watir::Exception::UnknownObjectException
           more_pages = false
         end
       end
@@ -84,6 +84,17 @@ class GuideStar
     def init_csv file
       csv = CSV.open(file,'wb')
       csv << ["keyword", "income", "page", "name", "url"]
+    end
+
+    #http://stackoverflow.com/questions/1939333/how-to-make-a-ruby-string-safe-for-a-filesystem
+    def sanitize_filename(filename)
+      filename.strip do |name|
+       # NOTE: File.basename doesn't work right with Windows paths on Unix
+       # get only the filename, not the whole path
+       name.gsub!(/^.*(\\|\/)/, '')
+       # Strip out the non-ascii character
+       name.gsub!(/[^0-9A-Za-z.\-]/, '_')
+      end
     end
 
 end

@@ -1,7 +1,10 @@
+require 'yaml'
 require 'guidestar'
 
 KEYWORDS = ['lesbian', 'gay', 'bisexual', 'transgender', 'transmen', 'transwomen', 
 			'queer', '"two spirit"', 'intersex', '"gender non*"', 'gender', 'lgbt', 'lgbtq' ]
 
-guidestar = GuideStar.new('rahulb@yahoo.com','lalahm123')
-guidestar.scrape_orgs_matching 'foot'
+config = YAML.load_file('config.yaml')
+
+guidestar = GuideStar.new(config['user'],config['pass'])
+guidestar.scrape_orgs_matching KEYWORDS[7]
