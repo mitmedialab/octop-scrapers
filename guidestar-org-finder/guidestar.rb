@@ -15,7 +15,6 @@ class GuideStar
     @log = Logger.new 'guidestar.log'
     @user = username
     @pass = password
-    @output_csv = init_csv 'guidestar.csv'
     @logged_in = false
     @log.info "Creating browser"
     @browser = Watir::Browser.new :chrome
@@ -23,6 +22,7 @@ class GuideStar
   end
 
   def scrape_orgs_matching keyword
+    @output_csv = init_csv 'guidestar-'+keyword+'.csv'
     login if not @logged_in
     INCOME_RANGES.each do |income|
       do_advanced_search keyword, income
@@ -57,11 +57,16 @@ class GuideStar
       page_num = 1
       queue_search_results_page keyword, income_range, page_num
       # go to next page
-      while @browser.link(:text=>'Next >').exists? do
-        page_num = page_num + 1
-        @log.info "  loading next page..."
-        @browser.link(:text=>'Next >').click
-        queue_search_results_page keyword, income_range, page_num
+      more_pages = true
+      while more_pages do   # for some reason @browser.link(:text=>'Next >').present? didn't work, so I catch the error instead :-(
+        begin
+          page_num = page_num + 1
+          @log.info "  loading next page..."
+          @browser.link(:text=>'Next >').click
+          queue_search_results_page keyword, income_range, page_num
+        rescue Selenium::WebDriver::Error::WebDriverError
+          more_pages = false
+        end
       end
     end
 
